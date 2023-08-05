@@ -22,12 +22,13 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     super.initState();
     _controller = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 1300));
-    _slideAnimation =
-        Tween<Offset>(begin: const Offset(-1.5, 0), end: const Offset(0, 0))
-            .animate(_controller);
-    _sizeAnimation = Tween<double>(begin: 0, end: 60)
+    _slideAnimation = Tween<Offset>(
+            begin: const Offset(-1.5, 0), end: const Offset(0, 0))
+        .animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+    _sizeAnimation = Tween<double>(begin: 0, end: 55)
         .animate(CurvedAnimation(parent: _controller, curve: Curves.bounceOut));
-    _textAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(_controller);
+    _textAnimation = Tween<double>(begin: 0.0, end: 1.0)
+        .animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -59,78 +60,88 @@ class _WelcomeScreenState extends State<WelcomeScreen>
               flex: 3,
               child: Padding(
                 padding: const EdgeInsets.only(left: 30),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(
-                      width: 50,
-                      child: Column(
-                        children: [
-                          Divider(
-                            thickness: 2,
-                            color: Colors.red,
-                            height: 10,
+                child: AnimatedBuilder(
+                  animation: _controller,
+                  builder: (context, _) {
+                    double value = _sizeAnimation.value;
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          width: 50,
+                          child: Column(
+                            children: [
+                              Opacity(
+                                opacity: _textAnimation.value,
+                                child: Divider(
+                                  thickness: 2,
+                                  color: Colors.red,
+                                  height: 25 - _textAnimation.value * 15,
+                                ),
+                              ),
+                              Opacity(
+                                opacity: _textAnimation.value,
+                                child: Divider(
+                                  thickness: 2,
+                                  color: Colors.red,
+                                  height: 25 - _textAnimation.value * 15,
+                                ),
+                              ),
+                              Opacity(
+                                opacity: _textAnimation.value,
+                                child: Divider(
+                                  thickness: 2,
+                                  color: Colors.red,
+                                  height: 25 - _textAnimation.value * 15,
+                                ),
+                              )
+                            ],
                           ),
-                          Divider(
-                            thickness: 2,
-                            color: Colors.red,
-                            height: 10,
-                          ),
-                          Divider(
-                            thickness: 2,
-                            color: Colors.red,
-                            height: 10,
-                          )
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 25),
-                    AnimatedBuilder(
-                      animation: _controller,
-                      builder: (context, child) {
-                        return Opacity(
+                        ),
+                        const SizedBox(height: 25),
+                        Opacity(
                           opacity: _textAnimation.value,
-                          child: Text.rich(
-                            TextSpan(
-                              children: [
-                                TextSpan(
-                                    text: 'Feel ',
-                                    style: AppTextStyle.regularBlack30
-                                        .copyWith(color: Colors.red)),
-                                TextSpan(
-                                    text: 'Special Now\n',
-                                    style: AppTextStyle.boldBlack30.copyWith(
-                                        fontWeight: FontWeight.w900,
-                                        color: Colors.red)),
-                                TextSpan(
-                                    text: 'More Often',
-                                    style: AppTextStyle.regularBlack30
-                                        .copyWith(color: Colors.red)),
-                              ],
+                          child: Padding(
+                            padding: EdgeInsets.only(
+                                top: 51 - _textAnimation.value * 50),
+                            child: Text.rich(
+                              TextSpan(
+                                children: [
+                                  TextSpan(
+                                      text: 'Feel ',
+                                      style: AppTextStyle.regularBlack30
+                                          .copyWith(color: Colors.red)),
+                                  TextSpan(
+                                      text: 'Special Now\n',
+                                      style: AppTextStyle.boldBlack30.copyWith(
+                                          fontWeight: FontWeight.w900,
+                                          color: Colors.red)),
+                                  TextSpan(
+                                      text: 'More Often',
+                                      style: AppTextStyle.regularBlack30
+                                          .copyWith(color: Colors.red)),
+                                ],
+                              ),
                             ),
                           ),
-                        );
-                      },
-                    ),
-                    const Spacer(),
-                    AnimatedBuilder(
-                      animation: _controller,
-                      builder: (context, child) {
-                        return Container(
-                          height: _sizeAnimation.value,
-                          width: _sizeAnimation.value,
-                          decoration: const BoxDecoration(
-                              color: Colors.red, shape: BoxShape.circle),
-                          child: const Icon(
-                            Icons.arrow_forward_ios,
-                            color: AppColors.white,
-                            size: 26,
-                          ),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 25),
-                  ],
+                        ),
+                        const Spacer(),
+                        Container(
+                            height: _sizeAnimation.value,
+                            width: _sizeAnimation.value,
+                            decoration: const BoxDecoration(
+                                color: Colors.red, shape: BoxShape.circle),
+                            child: value > 26
+                                ? const Icon(
+                                    Icons.arrow_forward_ios,
+                                    color: AppColors.white,
+                                    size: 26,
+                                  )
+                                : Container()),
+                        const SizedBox(height: 25),
+                      ],
+                    );
+                  },
                 ),
               ),
             )
