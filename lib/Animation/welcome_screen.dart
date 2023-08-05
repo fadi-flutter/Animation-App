@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sociel_app/Animation/balance_page.dart';
 import 'package:sociel_app/utils/app_colors.dart';
 import 'package:sociel_app/utils/app_strings.dart';
 import 'package:sociel_app/utils/app_styles.dart';
@@ -11,10 +12,11 @@ class WelcomeScreen extends StatefulWidget {
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late AnimationController _controller;
+  late AnimationController _sizeController;
   late Animation<Offset> _slideAnimation;
-  late Animation<double> _sizeAnimation;
+  Animation<double>? _sizeAnimation;
   late Animation<double> _textAnimation;
 
   @override
@@ -22,25 +24,36 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     super.initState();
     _controller = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 1300));
+
     _slideAnimation = Tween<Offset>(
             begin: const Offset(-1.5, 0), end: const Offset(0, 0))
         .animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
-    _sizeAnimation = Tween<double>(begin: 0, end: 55)
-        .animate(CurvedAnimation(parent: _controller, curve: Curves.bounceOut));
+
     _textAnimation = Tween<double>(begin: 0.0, end: 1.0)
         .animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+
+    Future.delayed(const Duration(milliseconds: 1300), () {
+      _sizeController = AnimationController(
+          vsync: this, duration: const Duration(milliseconds: 1500));
+      _sizeAnimation = Tween<double>(begin: 0, end: 55).animate(
+          CurvedAnimation(parent: _sizeController, curve: Curves.elasticOut));
+      _sizeController.forward();
+    });
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _sizeController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     _controller.reset();
+
     _controller.forward();
+
     return Scaffold(
       backgroundColor: const Color(0xffffffff),
       body: SafeArea(
@@ -51,8 +64,14 @@ class _WelcomeScreenState extends State<WelcomeScreen>
               flex: 5,
               child: SlideTransition(
                 position: _slideAnimation,
-                child: Image.asset(
-                  AppStrings.bird,
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (_) => const BalancePage()));
+                  },
+                  child: Image.asset(
+                    AppStrings.bird,
+                  ),
                 ),
               ),
             ),
@@ -63,7 +82,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                 child: AnimatedBuilder(
                   animation: _controller,
                   builder: (context, _) {
-                    double value = _sizeAnimation.value;
+                    double value = _sizeAnimation?.value ?? 0;
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -103,7 +122,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                           opacity: _textAnimation.value,
                           child: Padding(
                             padding: EdgeInsets.only(
-                                top: 51 - _textAnimation.value * 50),
+                                top: 41 - _textAnimation.value * 40),
                             child: Text.rich(
                               TextSpan(
                                 children: [
@@ -127,8 +146,8 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                         ),
                         const Spacer(),
                         Container(
-                            height: _sizeAnimation.value,
-                            width: _sizeAnimation.value,
+                            height: _sizeAnimation?.value ?? 0,
+                            width: _sizeAnimation?.value ?? 0,
                             decoration: const BoxDecoration(
                                 color: Colors.red, shape: BoxShape.circle),
                             child: value > 26
