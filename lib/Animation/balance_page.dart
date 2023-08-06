@@ -1,18 +1,45 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:sociel_app/utils/app_colors.dart';
 import 'package:sociel_app/utils/app_styles.dart';
 
-class BalancePage extends StatelessWidget {
+class BalancePage extends StatefulWidget {
   const BalancePage({super.key});
-  void statusBarChanges() {
-    SystemChrome.setSystemUIOverlayStyle(
-        const SystemUiOverlayStyle(statusBarColor: Colors.red));
+
+  @override
+  State<BalancePage> createState() => _BalancePageState();
+}
+
+class _BalancePageState extends State<BalancePage>
+    with TickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+  int _turns = 0;
+  @override
+  void initState() {
+    _controller =
+        AnimationController(vsync: this, duration: const Duration(seconds: 3));
+    _animation = Tween(begin: 0.0, end: 1.0).animate(
+        CurvedAnimation(parent: _controller, curve: Curves.elasticOut));
+    _controller.forward();
+
+    increaseTurn();
+
+    super.initState();
+  }
+
+  increaseTurn() async {
+    for (var i = 0; i < 3; i++) {
+      await Future.delayed(const Duration(milliseconds: 500), () {
+        setState(() {
+          _turns++;
+        });
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    statusBarChanges();
+    print(_turns);
     return Scaffold(
       backgroundColor: AppColors.white,
       body: SafeArea(
@@ -26,80 +53,87 @@ class BalancePage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(right: 15),
-                          alignment: Alignment.center,
-                          height: 60,
-                          width: 60,
-                          decoration: BoxDecoration(
-                            color: Colors.red,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text(
-                            'FA',
-                            style: AppTextStyle.boldWhite22
-                                .copyWith(fontWeight: FontWeight.w900),
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 50,
-                          child: Column(
-                            children: [
-                              Opacity(
-                                opacity: 1,
-                                child: Divider(
-                                  thickness: 2,
-                                  color: Colors.red,
-                                  height: 10,
+                    _turns > 1 || _turns == 1
+                        ? TweenAnimationBuilder(
+                            tween: Tween<double>(begin: 0.0, end: 1.0),
+                            duration: const Duration(milliseconds: 700),
+                            builder: (context, value, child) {
+                              return Padding(
+                                padding: EdgeInsets.only(top: 30 - value * 29),
+                                child: Opacity(
+                                  opacity: value,
+                                  child: child,
                                 ),
+                              );
+                            },
+                            child: Container(
+                              margin: const EdgeInsets.only(
+                                right: 15,
                               ),
-                              Opacity(
-                                opacity: 1,
-                                child: Divider(
-                                  thickness: 2,
-                                  color: Colors.red,
-                                  height: 10,
-                                ),
+                              alignment: Alignment.center,
+                              height: 60,
+                              width: 60,
+                              decoration: BoxDecoration(
+                                color: Colors.red,
+                                borderRadius: BorderRadius.circular(20),
                               ),
-                              Opacity(
-                                opacity: 1,
-                                child: Divider(
-                                  thickness: 2,
-                                  color: Colors.red,
-                                  height: 10,
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
+                              child: Text(
+                                'FA',
+                                style: AppTextStyle.boldWhite22
+                                    .copyWith(fontWeight: FontWeight.w900),
+                              ),
+                            ),
+                          )
+                        : Container(),
                     const SizedBox(height: 35),
-                    Text(
-                      'WELCOME BACK\n FAHAD ',
-                      style: AppTextStyle.boldBlack22.copyWith(
-                          color: Colors.red, fontWeight: FontWeight.w900),
-                    ),
-                    const SizedBox(height: 60),
-                    Text.rich(
-                      TextSpan(
-                        children: [
-                          TextSpan(
-                              text: 'Yours latest payment was\n ',
-                              style: AppTextStyle.mediumBlack14
-                                  .copyWith(color: Colors.red)),
-                          const WidgetSpan(
-                              child: SizedBox(height: 40),
-                              alignment: PlaceholderAlignment.middle),
-                          TextSpan(
-                              text: 'BIG Trade - \$12.5 / 2 Points',
-                              style: AppTextStyle.boldBlack16
-                                  .copyWith(color: Colors.red))
-                        ],
-                      ),
-                    ),
+                    _turns > 2 || _turns == 2
+                        ? TweenAnimationBuilder(
+                            tween: Tween(begin: 0.0, end: 1.0),
+                            duration: const Duration(milliseconds: 700),
+                            builder: (context, value, child) {
+                              return Padding(
+                                padding: EdgeInsets.only(top: 30 - value * 29),
+                                child: Opacity(opacity: value, child: child),
+                              );
+                            },
+                            child: Text(
+                              'WELCOME BACK\n FAHAD ',
+                              style: AppTextStyle.boldBlack22.copyWith(
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.w900),
+                            ),
+                          )
+                        : Container(),
+                    const SizedBox(height: 30),
+                    _turns > 3 || _turns == 3
+                        ? TweenAnimationBuilder(
+                            tween: Tween(begin: 0.0, end: 1.0),
+                            duration: const Duration(milliseconds: 700),
+                            builder: (context, value, child) {
+                              return Padding(
+                                padding: EdgeInsets.only(top: 30 - value * 29),
+                                child: Opacity(opacity: value, child: child),
+                              );
+                            },
+                            child: Text.rich(
+                              TextSpan(
+                                children: [
+                                  TextSpan(
+                                      text: 'Yours latest payment was\n ',
+                                      style: AppTextStyle.mediumBlack14
+                                          .copyWith(color: Colors.red)),
+                                  const WidgetSpan(
+                                      child: SizedBox(height: 40),
+                                      alignment: PlaceholderAlignment.middle),
+                                  TextSpan(
+                                      text: 'BIG Trade - \$12.5 / 2 Points',
+                                      style: AppTextStyle.boldBlack16
+                                          .copyWith(color: Colors.red))
+                                ],
+                              ),
+                            ),
+                          )
+                        : Container(),
                     const Spacer(),
                     Text(
                       'Points',
@@ -109,7 +143,7 @@ class BalancePage extends StatelessWidget {
                     ),
                     const SizedBox(height: 10),
                     Text(
-                      '31',
+                      '\$31',
                       style: AppTextStyle.boldBlack26.copyWith(
                           color: Colors.red, fontWeight: FontWeight.w900),
                     ),
@@ -154,25 +188,40 @@ class BalancePage extends StatelessWidget {
             Expanded(
               child: Container(
                 color: Colors.red,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const RotatedBox(
-                      quarterTurns: 1,
-                      child: Icon(
-                        Icons.arrow_back_ios,
-                        color: AppColors.white,
+                child: AnimatedBuilder(
+                  animation: _controller,
+                  builder: (context, _) {
+                    return Opacity(
+                      opacity: _animation.value > 0.4 ? 1.0 : _animation.value,
+                      child: Padding(
+                        padding:
+                            EdgeInsets.only(top: 91 - _animation.value * 71),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const RotatedBox(
+                              quarterTurns: 1,
+                              child: Icon(
+                                Icons.arrow_back_ios,
+                                color: AppColors.white,
+                              ),
+                            ),
+                            SizedBox(
+                              height: 0 + _animation.value * 18,
+                            ),
+                            RotatedBox(
+                              quarterTurns: -1,
+                              child: Text(
+                                'My Cards',
+                                style: AppTextStyle.boldWhite20,
+                                textDirection: TextDirection.ltr,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    RotatedBox(
-                      quarterTurns: -1,
-                      child: Text(
-                        'My Cards',
-                        style: AppTextStyle.boldWhite20,
-                        textDirection: TextDirection.ltr,
-                      ),
-                    ),
-                  ],
+                    );
+                  },
                 ),
               ),
             )
