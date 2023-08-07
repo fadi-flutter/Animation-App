@@ -22,10 +22,9 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(milliseconds: 800));
     //controler for text and bird
     _controller = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 1300));
+        vsync: this, duration: const Duration(milliseconds: 1800));
     //controler for bottom container
     _containerController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 1500));
@@ -39,8 +38,8 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     //after 1.8 sec run botttom container animation
     Future.delayed(const Duration(milliseconds: 1800), () {
       _containerAnimation = Tween<double>(begin: 0, end: 55).animate(
-          CurvedAnimation(
-              parent: _containerController, curve: Curves.elasticOut));
+        CurvedAnimation(parent: _containerController, curve: Curves.elasticOut),
+      );
       _containerController.forward();
     });
   }
@@ -68,14 +67,8 @@ class _WelcomeScreenState extends State<WelcomeScreen>
               flex: 5,
               child: SlideTransition(
                 position: _slideAnimation,
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (_) => const BalancePage()));
-                  },
-                  child: Image.asset(
-                    AppStrings.bird,
-                  ),
+                child: Image.asset(
+                  AppStrings.bird,
                 ),
               ),
             ),
@@ -155,22 +148,32 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                         }),
                     const Spacer(),
                     AnimatedBuilder(
-                        animation: _containerController,
-                        builder: (context, _) {
-                          double value = _containerAnimation?.value ?? 0;
-                          return Container(
-                              height: _containerAnimation?.value ?? 0,
-                              width: _containerAnimation?.value ?? 0,
-                              decoration: const BoxDecoration(
-                                  color: Colors.red, shape: BoxShape.circle),
-                              child: value > 26
-                                  ? const Icon(
-                                      Icons.arrow_forward_ios,
-                                      color: AppColors.white,
-                                      size: 26,
-                                    )
-                                  : Container());
-                        }),
+                      animation: _containerController,
+                      builder: (context, _) {
+                        double value = _containerAnimation?.value ?? 0;
+                        return InkWell(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => const BalancePage()));
+                          },
+                          child: Container(
+                            height: _containerAnimation?.value ?? 0,
+                            width: _containerAnimation?.value ?? 0,
+                            decoration: const BoxDecoration(
+                                color: Colors.red, shape: BoxShape.circle),
+                            child: value > 26
+                                ? const Icon(
+                                    Icons.arrow_forward_ios,
+                                    color: AppColors.white,
+                                    size: 26,
+                                  )
+                                : Container(),
+                          ),
+                        );
+                      },
+                    ),
                     const SizedBox(height: 25),
                   ],
                 ),
