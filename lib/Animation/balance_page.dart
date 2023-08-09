@@ -52,7 +52,7 @@ class _BalancePageState extends State<BalancePage>
         context,
         MaterialPageRoute(builder: (_) => const HomePage()),
       );
-    });
+    }).then((value) => _navigateController.reset());
   }
 
   @override
